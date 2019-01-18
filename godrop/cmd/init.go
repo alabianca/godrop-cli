@@ -34,6 +34,7 @@ var initCmd = &cobra.Command{
 }
 
 func execInitCommand(command *cobra.Command, args []string) {
+	fmt.Println("In init")
 	// questions := initQuestions()
 	// promptQuestions(&questions)
 
