@@ -4,23 +4,16 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"path"
+	"strings"
 
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/viper"
+
 	"github.com/spf13/cobra"
 )
 
-// var questions = map[string]string{
-// 	"Enter Relay Server IP: ":   "",
-// 	"Enter Relay Server Port: ": "",
-// 	"Enter User ID: ":           "",
-// }
+type questions []question
 
-type Questions struct {
-	qs []Question
-}
-
-type Question struct {
+type question struct {
 	q      string
 	key    string
 	answer string
@@ -34,84 +27,93 @@ var initCmd = &cobra.Command{
 }
 
 func execInitCommand(command *cobra.Command, args []string) {
-	fmt.Println("In init")
-	// questions := initQuestions()
-	// promptQuestions(&questions)
 
-	// if err := writeConfig(&questions); err != nil {
-	// 	fmt.Println("Error writing config file.")
-	// 	command.Usage()
-	// 	os.Exit(1)
-	// }
-
-	// home, _ := homedir.Dir()
-
-	// fmt.Printf("Godrop is initialized. Config file written in %s\n", path.Join(home, config))
+	questions := initQuestions()
+	promptQuestions(&questions)
+	save(&questions)
 
 }
 
 //initialize questions with defaults
-func initQuestions() Questions {
-	var questions = Questions{
-		qs: make([]Question, 3),
+func initQuestions() questions {
+	var questions = make([]question, 10)
+
+	questions[0] = question{
+		q:   "[HP]Enter Relay Server IP: ",
+		key: "RelayIP",
 	}
 
-	questions.qs[0] = Question{
-		q:      "[HP]Enter Relay Server IP: ",
-		key:    "RelayIP",
-		answer: "127.0.0.1",
+	questions[1] = question{
+		q:   "[HP]Enter Relay Server Port: ",
+		key: "RelayPort",
 	}
 
-	questions.qs[1] = Question{
-		q:      "[HP]Enter Relay Server Port: ",
-		key:    "RelayPort",
-		answer: "8080",
+	questions[2] = question{
+		q:   "[HP]Enter User ID: ",
+		key: "UID",
 	}
 
-	questions.qs[2] = Question{
-		q:      "[HP]Enter User ID: ",
-		key:    "UID",
-		answer: "godrop",
+	questions[3] = question{
+		q:   "Enter your host name: ",
+		key: "Host",
+	}
+
+	questions[4] = question{
+		q:   "Enter your service name: ",
+		key: "ServiceName",
+	}
+
+	questions[5] = question{
+		q:   "Enter your service Weight: ",
+		key: "ServiceWeight",
+	}
+
+	questions[6] = question{
+		q:   "Enter your TTL: ",
+		key: "TTL",
+	}
+
+	questions[7] = question{
+		q:   "Enter your service priority: ",
+		key: "Priority",
+	}
+
+	questions[8] = question{
+		q:   "Enter your local port: ",
+		key: "LocalPort",
+	}
+
+	questions[9] = question{
+		q:   "Enter your local IP: ",
+		key: "LocalIP",
 	}
 
 	return questions
 
 }
 
-func promptQuestions(qs *Questions) {
+func promptQuestions(qs *questions) {
 	buf := bufio.NewReader(os.Stdin)
-	for i, q := range (*qs).qs {
+	fmt.Println("Press Enter to accept the default")
+	for i, q := range *qs {
 		fmt.Print(q.q)
 		a, _ := buf.ReadString('\n')
-		(*qs).qs[i].answer = a
+		a = strings.TrimSpace(a)
+
+		if len(a) > 0 {
+			(*qs)[i].answer = a
+		} else {
+			(*qs)[i].answer = viper.GetString(q.key)
+		}
 	}
 }
 
-func writeConfig(values *Questions) (err error) {
-	home, err := homedir.Dir()
-
-	pathToConf := path.Join(home, config)
-
-	var f *os.File
-
-	if _, err := os.Stat(pathToConf); err == nil {
-		//file does exist delete it first
-		fmt.Println("Deleting old file")
-		os.Remove(pathToConf)
+func save(values *questions) {
+	for _, q := range *values {
+		viper.Set(q.key, q.answer)
 	}
 
-	if f, err = os.Create(pathToConf); f != nil {
-		write(f, values)
-	}
-
-	return
-}
-
-func write(file *os.File, values *Questions) {
-	for _, v := range (*values).qs {
-		value := v.key + " - " + v.answer
-		file.WriteString(value)
-	}
+	viper.WriteConfig()
 }
 
 func init() {
