@@ -86,7 +86,7 @@ func share(path string, l *logger) {
 }
 
 func configGodropMdns() (*godrop.Godrop, error) {
-	drop, err := godrop.NewGodrop()
+	drop, err := godrop.NewGodrop(mdnsConfig)
 
 	if err != nil {
 		return nil, err
