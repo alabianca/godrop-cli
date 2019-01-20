@@ -49,8 +49,14 @@ func init() {
 }
 
 func share(path string, l *logger) {
-	l.log("Configuring godrop via mdns")
+	l.log("Configuring godrop via mdns...")
 	drop, err := configGodropMdns()
+
+	l.log("Configured Godrop MDNS")
+	l.log(drop.Port)
+	l.log(drop.IP)
+	l.log(drop.Host)
+	l.log(drop.ServiceName)
 
 	if err != nil {
 		errorAndExit(err)
@@ -80,7 +86,7 @@ func share(path string, l *logger) {
 }
 
 func configGodropMdns() (*godrop.Godrop, error) {
-	drop, err := godrop.NewGodrop(mdnsConfig)
+	drop, err := godrop.NewGodrop()
 
 	if err != nil {
 		return nil, err
