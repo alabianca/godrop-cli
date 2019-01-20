@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"io"
 	"os"
 
@@ -37,7 +36,13 @@ func runAccept(command *cobra.Command, args []string) {
 
 	l.log("Reading from peer...")
 
-	writer := bufio.NewWriter(os.Stdout)
+	f, err := os.Create("cuba.jpg")
+
+	if err != nil {
+		errorAndExit(err)
+	}
+
+	//writer := bufio.NewWriter(os.Stdout)
 	data := make([]byte, 0)
 	buf := make([]byte, 1024)
 	for {
@@ -46,8 +51,9 @@ func runAccept(command *cobra.Command, args []string) {
 		if err != nil {
 			if err == io.EOF {
 				data = append(data, buf[:n]...)
-				writer.Write(data)
-				writer.Flush()
+				f.Write(data)
+				f.Close()
+
 				return
 			}
 		}
