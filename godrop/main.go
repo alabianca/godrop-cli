@@ -2,30 +2,33 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
+
+	"github.com/alabianca/godrop-cli/godrop/cmd"
 
 	"github.com/alabianca/godrop"
 )
 
 func main() {
-	drop, err := godrop.NewGodrop()
 
-	if err != nil {
-		panic(err)
-	}
+	cmd.RootCmd.Execute()
+	// drop, err := godrop.NewGodrop()
 
-	connStrategy := drop.NewP2PConn("mdns")
+	// if err != nil {
+	// 	panic(err)
+	// }
 
-	p2pConn, err := connStrategy.Connect("")
+	// connStrategy := drop.NewP2PConn("mdns")
 
-	if err != nil {
-		fmt.Println("Could Not establish P2P Connection")
-		os.Exit(1)
-	}
+	// p2pConn, err := connStrategy.Connect("")
 
-	pipe(readStdin(), readFromPeer(p2pConn), p2pConn)
+	// if err != nil {
+	// 	fmt.Println("Could Not establish P2P Connection")
+	// 	os.Exit(1)
+	// }
+
+	// pipe(readStdin(), readFromPeer(p2pConn), p2pConn)
 
 }
 
