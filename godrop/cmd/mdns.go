@@ -39,7 +39,7 @@ func runShare(command *cobra.Command, args []string) {
 
 	fmt.Printf("Sharing %d bytes\n", fInfo.Size())
 
-	share(path, &l)
+	share(path, fInfo, &l)
 
 }
 
@@ -48,15 +48,12 @@ func init() {
 
 }
 
-func share(path string, l *logger) {
+func share(path string, fInfo os.FileInfo, l *logger) {
 	l.log("Configuring godrop via mdns...")
+
 	drop, err := configGodropMdns()
 
 	l.log("Configured Godrop MDNS")
-	l.log(drop.Port)
-	l.log(drop.IP)
-	l.log(drop.Host)
-	l.log(drop.ServiceName)
 
 	if err != nil {
 		errorAndExit(err)
@@ -75,12 +72,14 @@ func share(path string, l *logger) {
 
 	l.log("Reading file...")
 	content, err := ioutil.ReadFile(path)
+	encodedPath := encodeFileName(path)
 
 	if err != nil {
 		errorAndExit(err)
 	}
 
 	l.log("Writing file...")
+	p2pConn.Write(encodedPath)
 	p2pConn.Write(content)
 
 }

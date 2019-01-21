@@ -36,13 +36,6 @@ func runAccept(command *cobra.Command, args []string) {
 
 	l.log("Reading from peer...")
 
-	f, err := os.Create("cuba.jpg")
-
-	if err != nil {
-		errorAndExit(err)
-	}
-
-	//writer := bufio.NewWriter(os.Stdout)
 	data := make([]byte, 0)
 	buf := make([]byte, 1024)
 	for {
@@ -50,16 +43,23 @@ func runAccept(command *cobra.Command, args []string) {
 
 		if err != nil {
 			if err == io.EOF {
-				data = append(data, buf[:n]...)
-				f.Write(data)
-				f.Close()
-
-				return
+				break
 			}
 		}
 
 		data = append(data, buf[:n]...)
 	}
+
+	shared := sharedObject{}
+	shared.decode(data)
+	f, err := os.Create(shared.filename)
+
+	if err != nil {
+		errorAndExit(err)
+	}
+
+	f.Write(shared.content)
+	f.Close()
 
 }
 
