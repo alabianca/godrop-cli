@@ -22,7 +22,7 @@ func (s *sharedObject) decode(data []byte) {
 	fname := strings.Join(parts, ".")
 
 	s.filename = fname
-	s.content = data[len(fname)+3:]
+	s.content = data[nameLength+extLength+3:]
 
 }
 
