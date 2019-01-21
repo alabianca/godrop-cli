@@ -82,10 +82,11 @@ func readConfig() {
 		if _, err := os.Create(pathToConf); err != nil {
 			panic(fmt.Errorf("Fatal error config file: %s\n", err))
 		}
-		if e := viper.WriteConfig(); e != nil {
-			panic(fmt.Errorf("Could not write config file %s\n", e))
-		}
 
+	}
+
+	if e := viper.WriteConfig(); e != nil {
+		panic(fmt.Errorf("Could not write config file %s\n", e))
 	}
 
 	// Finally load in the file
