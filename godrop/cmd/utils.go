@@ -1,49 +1,91 @@
 package cmd
 
 import (
-	"path"
-	"strings"
+	"archive/zip"
+	"io"
+	"os"
+	"path/filepath"
 )
 
-type sharedObject struct {
-	filename string
-	content  []byte
+func Zip(dir string) (string, error) {
+	output, err := outputName(dir)
+
+	if err != nil {
+		return "", err
+	}
+
+	newZipFile, err := os.Create(output)
+	defer newZipFile.Close()
+
+	if err != nil {
+		return "", err
+	}
+
+	zipWriter := zip.NewWriter(newZipFile)
+	defer zipWriter.Close()
+
+	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		file, err := os.Open(path)
+		defer file.Close()
+
+		if err != nil {
+			return err
+		}
+
+		info, err = file.Stat()
+		if err != nil {
+			return err
+		}
+
+		header, err := zip.FileInfoHeader(info)
+
+		if err != nil {
+			return err
+		}
+
+		header.Name = path
+		header.Method = zip.Deflate
+
+		writer, err := zipWriter.CreateHeader(header)
+
+		if err != nil {
+			return err
+		}
+
+		if _, err := io.Copy(writer, file); err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	return output, err
+
 }
 
-func (s *sharedObject) decode(data []byte) {
-	// 1. decode the filename [x | name | y | ext]
-	nameLength := int(data[0])
-	filename := string(data[1 : nameLength+1])
+func outputName(path string) (string, error) {
+	file, err := os.Open(path)
 
-	extLength := int(data[1+nameLength])
+	defer file.Close()
 
-	ext := string(data[1+nameLength+1 : 1+nameLength+1+extLength])
-	parts := []string{filename, ext}
-	fname := strings.Join(parts, ".")
+	if err != nil {
 
-	s.filename = fname
-	s.content = data[nameLength+extLength+3:]
+		return "", err
+	}
 
-}
+	info, err := file.Stat()
 
-// [x | name | y | ext]
-// CUBA.JPG
-// ../CUBA.JPG
-// img/CUBA.JPG
+	if err != nil {
+		return "", err
+	}
 
-// encode a filename into bytes
-func encodeFileName(filePath string) []byte {
-	_, file := path.Split(filePath)
-	ext := strings.Trim(path.Ext(file), ".")
-	split := strings.Split(file, ".")
-	filename := strings.Join(split[:len(split)-1], "")
-
-	encoded := make([]byte, 0)
-	encoded = append(encoded, byte(len(filename)))
-	encoded = append(encoded, []byte(filename)...)
-	encoded = append(encoded, byte(len(ext)))
-	encoded = append(encoded, []byte(ext)...)
-	encoded = append(encoded, byte(0))
-
-	return encoded
+	return info.Name(), nil
 }

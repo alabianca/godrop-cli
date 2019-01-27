@@ -61,18 +61,6 @@ func readConfig() {
 	viper.AddConfigPath(home)
 	viper.SetConfigName(config)
 	viper.SetConfigType("yaml")
-	// Holepunch specific defaults
-	viper.SetDefault("RelayIP", defaultRelayIP)
-	viper.SetDefault("RelayPort", defaultRelayPort)
-	viper.SetDefault("UID", defaultUID)
-	// Mdns specific defaults
-	viper.SetDefault("Host", "godrop.local")
-	viper.SetDefault("ServiceName", "_godrop._tcp.local")
-	viper.SetDefault("ServiceWeight", "0")
-	viper.SetDefault("TTL", "0")
-	viper.SetDefault("Priority", "0")
-	viper.SetDefault("LocalPort", "4000")
-	viper.SetDefault("LocalIP", myIP.String())
 
 	// Check if the Config file exists. If not create it with defaults
 	pathToConf := path.Join(home, config)
@@ -83,10 +71,15 @@ func readConfig() {
 			panic(fmt.Errorf("Fatal error config file: %s\n", err))
 		}
 
-	}
+		viper.SetDefault("UID", defaultUID)
+		viper.SetDefault("Host", "godrop.local")
+		viper.SetDefault("LocalPort", 4000)
+		viper.SetDefault("LocalIP", myIP.String())
 
-	if e := viper.WriteConfig(); e != nil {
-		panic(fmt.Errorf("Could not write config file %s\n", e))
+		if e := viper.WriteConfig(); e != nil {
+			panic(fmt.Errorf("Could not write config file %s\n", e))
+		}
+
 	}
 
 	// Finally load in the file

@@ -13,22 +13,6 @@ import (
 func main() {
 
 	cmd.RootCmd.Execute()
-	// drop, err := godrop.NewGodrop()
-
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// connStrategy := drop.NewP2PConn("mdns")
-
-	// p2pConn, err := connStrategy.Connect("")
-
-	// if err != nil {
-	// 	fmt.Println("Could Not establish P2P Connection")
-	// 	os.Exit(1)
-	// }
-
-	// pipe(readStdin(), readFromPeer(p2pConn), p2pConn)
 
 }
 

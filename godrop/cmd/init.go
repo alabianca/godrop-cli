@@ -36,54 +36,24 @@ func execInitCommand(command *cobra.Command, args []string) {
 
 //initialize questions with defaults
 func initQuestions() questions {
-	var questions = make([]question, 10)
+	var questions = make([]question, 4)
 
 	questions[0] = question{
-		q:   "[HP]Enter Relay Server IP: ",
-		key: "RelayIP",
-	}
-
-	questions[1] = question{
-		q:   "[HP]Enter Relay Server Port: ",
-		key: "RelayPort",
-	}
-
-	questions[2] = question{
 		q:   "[HP]Enter User ID: ",
 		key: "UID",
 	}
 
-	questions[3] = question{
+	questions[1] = question{
 		q:   "Enter your host name: ",
 		key: "Host",
 	}
 
-	questions[4] = question{
-		q:   "Enter your service name: ",
-		key: "ServiceName",
-	}
-
-	questions[5] = question{
-		q:   "Enter your service Weight: ",
-		key: "ServiceWeight",
-	}
-
-	questions[6] = question{
-		q:   "Enter your TTL: ",
-		key: "TTL",
-	}
-
-	questions[7] = question{
-		q:   "Enter your service priority: ",
-		key: "Priority",
-	}
-
-	questions[8] = question{
+	questions[2] = question{
 		q:   "Enter your local port: ",
 		key: "LocalPort",
 	}
 
-	questions[9] = question{
+	questions[3] = question{
 		q:   "Enter your local IP: ",
 		key: "LocalIP",
 	}
