@@ -1,10 +1,9 @@
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"log"
-	"os"
-	"text/tabwriter"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -35,10 +34,12 @@ func ls(command *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, '.', tabwriter.AlignRight)
-	fmt.Fprintln(w, "Instance\tService\tDomain\tText")
+	buf := new(bytes.Buffer)
+	header := fmt.Sprintf("%-20s%-20s%-20s%-20s\n", "Instance", "Service", "Domain", "Text")
+	buf.WriteString(header)
 	for _, entry := range entries {
-		fmt.Fprintln(w, fmt.Sprintf("%s\t%s\t%s\t%s", entry.Instance, entry.Service, entry.Domain, entry.Text))
+		line := fmt.Sprintf("%-20s%-20s%-20s%-20s\n", entry.Instance, entry.Service, entry.Domain, entry.Text)
+		buf.WriteString(line)
 	}
-	w.Flush()
+	fmt.Println(buf.String())
 }
