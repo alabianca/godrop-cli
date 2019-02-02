@@ -32,6 +32,6 @@ func strToInt(str string, size int) int64 {
 }
 
 func errorAndExit(err error) {
-	fmt.Println(fmt.Errorf("%s"), err)
+	fmt.Println(fmt.Errorf("%s", err))
 	os.Exit(1)
 }

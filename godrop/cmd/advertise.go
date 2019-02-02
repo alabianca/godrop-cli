@@ -3,6 +3,7 @@ package cmd
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"os"
@@ -74,22 +75,49 @@ func mainLoop(s *godrop.Server) {
 			continue
 		}
 
-		go handleConn(conn)
+		handleConn(conn)
 	}
 }
 
 func handleConn(conn net.Conn) {
-	buf := make([]byte, 1024)
 
+	share, err := newShare()
+
+	if err != nil {
+		return
+	}
+
+	share.reader = bufio.NewReader(conn)
+	share.writer = bufio.NewWriter(conn)
+
+	go advertiseReadLoop(share)
+
+	share.wg.Wait()
+}
+
+func advertiseReadLoop(s *Share) {
+	s.wg.Add(1)
+
+	buf := make([]byte, 1024)
 	for {
-		n, err := conn.Read(buf)
+		_, err := s.reader.Read(buf)
 
 		if err != nil {
 			fmt.Println(err)
-			continue
+			if err == io.EOF {
+				s.wg.Done()
+				break
+			}
 		}
 
-		fmt.Println(buf[:n])
+		opType := int(buf[0])
+
+		switch opType {
+		case HANDSHAKE:
+			if err := s.handleHandshake(buf); err != nil {
+				fmt.Println(err)
+			}
+		}
 	}
 }
 

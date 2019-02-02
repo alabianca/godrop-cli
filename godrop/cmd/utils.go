@@ -1,91 +1,83 @@
 package cmd
 
 import (
-	"archive/zip"
-	"io"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/pem"
+	"fmt"
+	"io/ioutil"
 	"os"
-	"path/filepath"
+	"path"
+
+	homedir "github.com/mitchellh/go-homedir"
 )
 
-func Zip(dir string) (string, error) {
-	output, err := outputName(dir)
+func godropDir() (string, error) {
+	home, err := homedir.Dir()
 
 	if err != nil {
 		return "", err
 	}
 
-	newZipFile, err := os.Create(output)
-	defer newZipFile.Close()
+	dropDir := path.Join(home, ".godrop")
 
-	if err != nil {
-		return "", err
-	}
-
-	zipWriter := zip.NewWriter(newZipFile)
-	defer zipWriter.Close()
-
-	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if info.IsDir() {
-			return nil
-		}
-
-		file, err := os.Open(path)
-		defer file.Close()
-
-		if err != nil {
-			return err
-		}
-
-		info, err = file.Stat()
-		if err != nil {
-			return err
-		}
-
-		header, err := zip.FileInfoHeader(info)
-
-		if err != nil {
-			return err
-		}
-
-		header.Name = path
-		header.Method = zip.Deflate
-
-		writer, err := zipWriter.CreateHeader(header)
-
-		if err != nil {
-			return err
-		}
-
-		if _, err := io.Copy(writer, file); err != nil {
-			return err
-		}
-
-		return nil
-	})
-
-	return output, err
-
+	return dropDir, nil
 }
 
-func outputName(path string) (string, error) {
-	file, err := os.Open(path)
-
-	defer file.Close()
+func loadPublicKey() (*rsa.PublicKey, error) {
+	dropDir, err := godropDir()
 
 	if err != nil {
-
-		return "", err
+		return nil, err
 	}
 
-	info, err := file.Stat()
+	publicPem, errPub := os.Open(path.Join(dropDir, "pub.pem"))
+	pubBytes, err := ioutil.ReadAll(publicPem)
+
+	if errPub != nil {
+		return nil, errPub
+	}
+
+	pubBlock, pubRest := pem.Decode(pubBytes)
+
+	if len(pubRest) > 0 {
+		return nil, fmt.Errorf("Could not properly parse pub.pem")
+	}
+
+	key, err := x509.ParsePKCS1PublicKey(pubBlock.Bytes)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return info.Name(), nil
+	return key, nil
+}
+
+func loadPrivateKey() (*rsa.PrivateKey, error) {
+	dropDir, err := godropDir()
+
+	if err != nil {
+		return nil, err
+	}
+
+	privatePem, errPrv := os.Open(path.Join(dropDir, "priv.pem"))
+	prvBytes, err := ioutil.ReadAll(privatePem)
+
+	if errPrv != nil {
+		return nil, errPrv
+	}
+
+	prvBlock, prvRest := pem.Decode(prvBytes)
+
+	if len(prvRest) > 0 {
+		return nil, fmt.Errorf("Could not properly parse pub.pem")
+	}
+
+	key, err := x509.ParsePKCS1PrivateKey(prvBlock.Bytes)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return key, nil
 }
