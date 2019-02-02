@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	config           = ".godrop.yaml"
+	config           = "godrop.yaml"
 	defaultRelayIP   = "127.0.0.1"
 	defaultRelayPort = "8080"
 	defaultUID       = "def_godrop"
@@ -63,10 +63,14 @@ func readConfig() {
 	viper.SetConfigType("yaml")
 
 	// Check if the Config file exists. If not create it with defaults
-	pathToConf := path.Join(home, config)
+	pathToConf := path.Join(home, ".godrop", config)
 	viper.SetConfigFile(pathToConf)
 	if _, err := os.Stat(pathToConf); os.IsNotExist(err) {
 		//file does not exist create it first
+		if err := os.Mkdir(path.Join(home, ".godrop"), 0700); err != nil {
+			panic(err)
+		}
+
 		if _, err := os.Create(pathToConf); err != nil {
 			panic(fmt.Errorf("Fatal error config file: %s\n", err))
 		}
