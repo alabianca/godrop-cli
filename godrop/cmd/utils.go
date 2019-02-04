@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"bytes"
 	"crypto/rsa"
 	"crypto/x509"
+	"encoding/binary"
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
@@ -80,4 +82,14 @@ func loadPrivateKey() (*rsa.PrivateKey, error) {
 	}
 
 	return key, nil
+}
+
+func uint16ToBytes(num uint16) ([]byte, error) {
+	buf := new(bytes.Buffer)
+
+	if err := binary.Write(buf, binary.BigEndian, num); err != nil {
+		return nil, err
+	}
+
+	return buf.Bytes(), nil
 }
