@@ -63,36 +63,51 @@ func readConfig() {
 	viper.SetConfigType("yaml")
 
 	// Check if the Config file exists. If not create it with defaults
-	pathToConf := path.Join(home, ".godrop", config)
-	viper.SetConfigFile(pathToConf)
-	if _, err := os.Stat(pathToConf); os.IsNotExist(err) {
-		//file does not exist create it first
-		if err := os.Mkdir(path.Join(home, ".godrop"), 0700); err != nil {
-			panic(err)
-		}
-
-		if _, err := os.Create(pathToConf); err != nil {
-			panic(fmt.Errorf("Fatal error config file: %s\n", err))
-		}
-
+	if existed := createGodropDirIfNotExist(home); !existed {
 		viper.SetDefault("UID", defaultUID)
 		viper.SetDefault("Host", "godrop.local")
 		viper.SetDefault("LocalPort", 4000)
 		viper.SetDefault("LocalIP", myIP.String())
 
-		if e := viper.WriteConfig(); e != nil {
-			panic(fmt.Errorf("Could not write config file %s\n", e))
-		}
+	} else { //godrop config already exists
+		viper.ReadInConfig()
+		viper.Set("UID", viper.GetString("UID"))
+		viper.Set("Host", viper.GetString("Host"))
+		viper.Set("LocalPort", viper.GetInt("LocalPort"))
+		viper.Set("LocalIP", myIP.String())
+	}
 
+	if e := viper.WriteConfig(); e != nil {
+		panic(fmt.Errorf("Could not write config file %s\n", e))
 	}
 
 	// Finally load in the file
-
 	err = viper.ReadInConfig()
 	if err != nil {
 		panic(fmt.Errorf("Fatal error config file: %s \n", err))
 	}
 
+}
+
+func createGodropDirIfNotExist(home string) (existed bool) {
+	pathToConf := path.Join(home, ".godrop", config)
+	viper.SetConfigFile(pathToConf)
+
+	if _, err := os.Stat(pathToConf); os.IsNotExist(err) {
+		//does not exist. create it
+		if err := os.Mkdir(path.Join(home, ".godrop"), 0700); err != nil {
+			panic(err)
+		}
+
+		// now create the config file in the .godrop dir
+		if _, err := os.Create(pathToConf); err != nil {
+			panic(fmt.Errorf("Fatal error config file: %s\n", err))
+		}
+
+		return false
+	}
+
+	return true
 }
 
 func myIpv4() (net.IP, error) {
