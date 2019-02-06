@@ -1,10 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-	"io"
-	"os"
-
 	"github.com/spf13/cobra"
 )
 
@@ -15,36 +11,36 @@ var connectCmd = &cobra.Command{
 }
 
 func connect(command *cobra.Command, args []string) {
-	if len(args) <= 0 {
-		command.Usage()
-		os.Exit(1)
-	}
+	// if len(args) <= 0 {
+	// 	command.Usage()
+	// 	os.Exit(1)
+	// }
 
-	peer := args[0]
+	// peer := args[0]
 
-	drop, err := configGodropMdns()
+	// drop, err := configGodropMdns()
 
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	os.Exit(1)
+	// }
 
-	conn, err := drop.Connect(peer)
+	// conn, err := drop.Connect(peer)
 
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	os.Exit(1)
+	// }
 
-	for {
-		_, err := io.Copy(conn, os.Stdin)
+	// for {
+	// 	_, err := io.Copy(conn, os.Stdin)
 
-		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
-		}
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		os.Exit(1)
+	// 	}
 
-	}
+	// }
 }
 
 func init() {

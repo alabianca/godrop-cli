@@ -1,10 +1,13 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/alabianca/godrop"
 
 	"github.com/spf13/cobra"
 )
@@ -28,7 +31,7 @@ func runAdvertise(command *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	//go mainLoop(server)
+	go acceptConnections(server)
 
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
@@ -44,4 +47,17 @@ func runAdvertise(command *cobra.Command, args []string) {
 func init() {
 	RootCmd.AddCommand(advertiseCmd)
 
+}
+
+func acceptConnections(server *godrop.Server) {
+	sesh, err := server.Accept()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("Received a connection. Encryption: ", sesh.IsEncrypted())
+
+	sesh.Write([]byte("Hello World"))
+	sesh.Flush()
 }
