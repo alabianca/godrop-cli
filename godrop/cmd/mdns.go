@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 
@@ -22,18 +21,6 @@ func configGodropMdns() (*godrop.Godrop, error) {
 }
 
 func mdnsConfig(drop *godrop.Godrop) {
-
-	pubKey, puberr := loadPublicKey()
-	prvKey, prverr := loadPrivateKey()
-
-	if puberr != nil || prverr != nil {
-		drop.PrvKey = nil
-		drop.PubKey = nil
-		log.Println("Warning: Could not load private/public key pair. Communication will not be encrypted")
-	} else {
-		drop.PrvKey = prvKey
-		drop.PubKey = pubKey
-	}
 
 	drop.Port = viper.GetInt("LocalPort")
 	drop.Host = viper.GetString("Host")
