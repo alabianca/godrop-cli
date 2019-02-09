@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/signal"
@@ -77,26 +76,20 @@ func checkFile(fPath string) error {
 }
 
 func acceptConnections(server *godrop.Server) {
-	sesh, err := server.Accept()
 
-	if err != nil {
-		log.Fatal(err)
+	for {
+		sesh, err := server.Accept()
+
+		if err != nil {
+			log.Fatal("Could Not Accept Connection: ", err)
+			continue
+		}
+
+		go transfer(sesh)
+
 	}
+}
 
-	fmt.Println("Received a connection. Encryption: ", sesh.IsEncrypted())
-
-	file, err := server.ReadInSharePath()
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	content, err := ioutil.ReadAll(file)
-
-	if err != nil {
-		log.Println("Error Reading File")
-	}
-
-	sesh.Write(content)
-	sesh.Flush()
+func transfer(s *godrop.Session) {
+	s.WriteHeader()
 }

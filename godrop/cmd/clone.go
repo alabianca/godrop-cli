@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -37,11 +38,13 @@ func runClone(command *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	buf := make([]byte, 100)
+	header, err := sesh.ReadHeader()
 
-	n, _ := sesh.Read(buf)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	fmt.Println(string(buf[:n]))
+	log.Printf("Content-Length: %d\nFile Name: %s\n", header.Size, header.Name)
 
 }
 
