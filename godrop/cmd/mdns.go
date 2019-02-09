@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/viper"
 )
 
+// Configure Godrop over MDNS
+
 func configGodropMdns() (*godrop.Godrop, error) {
 	drop, err := godrop.NewGodrop(mdnsConfig)
 

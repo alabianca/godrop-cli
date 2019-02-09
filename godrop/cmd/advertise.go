@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/signal"
@@ -10,6 +11,10 @@ import (
 	"github.com/alabianca/godrop"
 
 	"github.com/spf13/cobra"
+)
+
+const (
+	BUF_SIZE = 1024
 )
 
 var advertiseCmd = &cobra.Command{
@@ -92,4 +97,25 @@ func acceptConnections(server *godrop.Server) {
 
 func transfer(s *godrop.Session) {
 	s.WriteHeader()
+
+	file, _ := os.Open(s.Finfo.Name())
+
+	buf := make([]byte, BUF_SIZE)
+
+	for {
+		n, err := file.Read(buf)
+
+		if err != nil {
+			if err == io.EOF {
+				log.Println("All sent")
+				break
+			} else {
+				log.Println(err)
+			}
+		}
+
+		s.Write(buf[:n])
+		s.Flush()
+	}
+
 }

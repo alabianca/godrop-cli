@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"os"
 
@@ -45,6 +46,28 @@ func runClone(command *cobra.Command, args []string) {
 	}
 
 	log.Printf("Content-Length: %d\nFile Name: %s\n", header.Size, header.Name)
+
+	file, err := os.Create(header.Name)
+
+	defer file.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var receivedByts int64
+
+	for {
+		if (header.Size - receivedByts) < BUF_SIZE {
+			io.CopyN(file, sesh, (header.Size - receivedByts))
+			break
+		}
+
+		io.CopyN(file, sesh, BUF_SIZE)
+		receivedByts += BUF_SIZE
+	}
+
+	log.Println("Done")
 
 }
 
