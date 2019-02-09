@@ -7,16 +7,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var shareCmd = &cobra.Command{
-	Use:   "share [INSTANCE]",
-	Short: "Share a file via mdns or tcp holepunch",
-	Long: `Share a file via mdns or tcp holepunch. 
-	Run godrop share mdns to share a file via mdns.
-	Run godrop share hp to share a file with a remote peer via tcp holepunch.`,
-	Run: runShare,
+var cloneCmd = &cobra.Command{
+	Use:   "clone [INSTANCE]",
+	Short: "Clone a file hosted by a peer in the local network",
+	Long:  `Run godrop clone download a file that is hosted by a peer.`,
+	Run:   runClone,
 }
 
-func runShare(command *cobra.Command, args []string) {
+func runClone(command *cobra.Command, args []string) {
 
 	if len(args) <= 0 {
 		command.Usage()
@@ -48,6 +46,6 @@ func runShare(command *cobra.Command, args []string) {
 }
 
 func init() {
-	RootCmd.AddCommand(shareCmd)
+	RootCmd.AddCommand(cloneCmd)
 
 }
