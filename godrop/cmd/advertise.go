@@ -100,6 +100,8 @@ func transfer(s *godrop.Session) {
 
 	file, _ := os.Open(s.Finfo.Name())
 
+	defer file.Close()
+
 	buf := make([]byte, BUF_SIZE)
 
 	for {
