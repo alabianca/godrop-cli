@@ -45,9 +45,10 @@ func runClone(command *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	clone := sesh.NewCloner()
-
-	clone.CloneDir(dir)
+	if err := sesh.CloneDir(dir); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 }
 
 func init() {
