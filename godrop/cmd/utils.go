@@ -14,6 +14,12 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 )
 
+const (
+	GB = 1000000000
+	MB = 1000000
+	KB = 1000
+)
+
 func godropDir() (string, error) {
 	home, err := homedir.Dir()
 
@@ -92,4 +98,25 @@ func uint16ToBytes(num uint16) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+func bytesToReadableFormat(numBytes int64) string {
+	var res float32
+
+	if numBytes >= GB {
+		res = float32(numBytes) / float32(GB)
+		return fmt.Sprintf("%.2f GB", res)
+	}
+
+	if numBytes >= MB {
+		res = float32(numBytes) / float32(MB)
+		return fmt.Sprintf("%.2f MB", res)
+	}
+
+	if numBytes >= KB {
+		res = float32(numBytes) / float32(KB)
+		return fmt.Sprintf("%.2f KB", res)
+	}
+
+	return fmt.Sprintf("%d Bytes", numBytes)
 }
