@@ -33,6 +33,7 @@ func runClone(command *cobra.Command, args []string) {
 	fmt.Println("Cloning contents to ", dir)
 
 	drop, err := configGodropMdns()
+	progress := NewProgressBar(os.Stdout)
 
 	if err != nil {
 		fmt.Println(err)
@@ -40,6 +41,8 @@ func runClone(command *cobra.Command, args []string) {
 	}
 	fmt.Printf("Finding %s ...\n", peer)
 	sesh, err := drop.Connect(peer)
+
+	sesh.DebugWriter = progress
 
 	if !sesh.IsEncrypted() {
 		log.Warn("Transfer is not encrypted. See godrop help gencert for generating a signed TLS certificate")
@@ -59,11 +62,14 @@ func runClone(command *cobra.Command, args []string) {
 	}
 
 	fmt.Printf("Cloning Remote %s. Content-Length: %s (Uncompressed)\n", header.Name, bytesToReadableFormat(header.Size))
+	progress.Init(header.Size)
 
 	if err := sesh.CloneDir(dir); err != nil {
 		log.Error(err)
 		os.Exit(1)
 	}
+
+	progress.Done()
 }
 
 func init() {
