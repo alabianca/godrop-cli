@@ -13,6 +13,8 @@ import (
 	"os"
 	"path"
 
+	"github.com/spf13/viper"
+
 	"github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 )
@@ -32,7 +34,7 @@ func runCert(command *cobra.Command, args []string) {
 
 	godropDir := path.Join(home, ".godrop")
 
-	csrTemplate := certTemplate()
+	csrTemplate := certTemplate(viper.GetString("Host"))
 	privKey, err := rsa.GenerateKey(rand.Reader, 2048)
 
 	if err != nil {
@@ -89,9 +91,9 @@ func init() {
 	RootCmd.AddCommand(genCertCmd)
 }
 
-func certTemplate() *x509.CertificateRequest {
+func certTemplate(cn string) *x509.CertificateRequest {
 	return &x509.CertificateRequest{
-		Subject:            pkix.Name{Organization: []string{"godrop IO"}, CommonName: "labianca.local"},
+		Subject:            pkix.Name{Organization: []string{"godrop IO"}, CommonName: cn},
 		SignatureAlgorithm: x509.SHA256WithRSA,
 	}
 }
