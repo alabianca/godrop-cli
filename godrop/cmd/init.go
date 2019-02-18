@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/spf13/viper"
-
+	. "github.com/logrusorgru/aurora"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 type questions []question
@@ -35,7 +35,7 @@ func execInitCommand(command *cobra.Command, args []string) {
 	promptQuestions(&questions)
 	questions[1].answer = getGodropDomain()
 	save(&questions)
-
+	initText()
 }
 
 //initialize questions with defaults
@@ -110,4 +110,13 @@ func getGodropDomain() string {
 
 func init() {
 	RootCmd.AddCommand(initCmd)
+}
+
+func initText() {
+	fmt.Println(Bold("Godrop has been initialized."))
+	fmt.Println()
+	fmt.Printf("Host: %s\nPort: %d\nUID: %s\n", Bold(viper.GetString("Host")), Bold(viper.GetInt("LocalPort")), Bold(viper.GetString("UID")))
+	fmt.Println()
+	fmt.Printf("You may run %s to generate your private key and TLS certificate\n", Bold("godrop gencert"))
+	fmt.Println()
 }

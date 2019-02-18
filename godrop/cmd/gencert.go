@@ -7,16 +7,17 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
+	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path"
 
-	"github.com/spf13/viper"
-
+	. "github.com/logrusorgru/aurora"
 	"github.com/mitchellh/go-homedir"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 var genCertCmd = &cobra.Command{
@@ -29,7 +30,8 @@ func runCert(command *cobra.Command, args []string) {
 	home, err := homedir.Dir()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	godropDir := path.Join(home, ".godrop")
@@ -38,7 +40,8 @@ func runCert(command *cobra.Command, args []string) {
 	privKey, err := rsa.GenerateKey(rand.Reader, 2048)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	csr, err := x509.CreateCertificateRequest(rand.Reader, csrTemplate, privKey)
@@ -51,7 +54,8 @@ func runCert(command *cobra.Command, args []string) {
 	keyFile, err := os.Create(path.Join(godropDir, "priv.pem"))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	pem.Encode(keyFile, &pem.Block{
@@ -69,22 +73,27 @@ func runCert(command *cobra.Command, args []string) {
 	req, err := http.NewRequest("POST", "http://104.248.183.179:80/csr", bytes.NewBuffer(pemBlock))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	res, err := httpClient.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	certFile, err := os.Create(path.Join(godropDir, "server.crt"))
 
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		os.Exit(1)
 	}
 
 	io.Copy(certFile, res.Body)
+
+	fmt.Printf("Success! TLS Certificate for %s signed by Root\n", Bold(Green((viper.GetString("UID") + "." + viper.GetString("Host")))))
 }
 
 func init() {

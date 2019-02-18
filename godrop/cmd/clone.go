@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	. "github.com/logrusorgru/aurora"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
@@ -53,7 +54,7 @@ func runClone(command *cobra.Command, args []string) {
 		log.Warn("Transfer is not encrypted. See godrop help gencert for generating a signed TLS certificate")
 	}
 
-	fmt.Printf("Connected to %s. \nHostname: %s\n", peer, sesh.RemoteHost)
+	fmt.Printf("Connected to %s. \nHostname: %s\n", Green(peer), Green(sesh.RemoteDroplet))
 
 	header, err := sesh.Authenticate()
 
@@ -61,7 +62,7 @@ func runClone(command *cobra.Command, args []string) {
 		log.Error("An Error Occurred During Authentication")
 	}
 
-	fmt.Printf("Cloning Remote %s. Content-Length: %s (Uncompressed)\n", header.Name, bytesToReadableFormat(header.Size))
+	fmt.Printf("Cloning Remote %s.\nContent-Length: %s (Uncompressed)\n", Green(header.Name), Green(bytesToReadableFormat(header.Size)))
 	progress.Init(header.Size)
 
 	if err := sesh.CloneDir(dir); err != nil {
