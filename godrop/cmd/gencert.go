@@ -34,7 +34,7 @@ func runCert(command *cobra.Command, args []string) {
 
 	godropDir := path.Join(home, ".godrop")
 
-	csrTemplate := certTemplate(viper.GetString("Host"))
+	csrTemplate := certTemplate(viper.GetString("UID") + "." + viper.GetString("Host"))
 	privKey, err := rsa.GenerateKey(rand.Reader, 2048)
 
 	if err != nil {
