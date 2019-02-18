@@ -11,9 +11,15 @@ import (
 )
 
 // Configure Godrop over MDNS
+func getGodropConfigs() []godrop.Option {
+	return []godrop.Option{
+		mdnsBasicConfig,
+		mdnsTLSconfig, // @todo: ignore this config if no tls is desired (ie; local testing)
+	}
+}
 
 func configGodropMdns() (*godrop.Godrop, error) {
-	drop, err := godrop.NewGodrop(mdnsConfig)
+	drop, err := godrop.NewGodrop(getGodropConfigs()...)
 
 	if err != nil {
 		return nil, err
@@ -22,28 +28,34 @@ func configGodropMdns() (*godrop.Godrop, error) {
 	return drop, nil
 }
 
-func mdnsConfig(drop *godrop.Godrop) {
+func mdnsBasicConfig(drop *godrop.Godrop) {
 
 	drop.Port = viper.GetInt("LocalPort")
 	drop.Host = viper.GetString("Host")
 	drop.UID = viper.GetString("UID")
 
-	//load TLS
+}
+
+func mdnsTLSconfig(drop *godrop.Godrop) {
+	//load TLS root cert
 	rootCrt, err := loadCertificate("root")
 
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
 	godropCrt, err := loadCertificate("server")
 
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
 	privKey, err := loadPrivateKey()
 
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
