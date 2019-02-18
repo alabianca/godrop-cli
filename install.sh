@@ -17,8 +17,12 @@ if [ -d ".godrop" ]; then
     rm -rf .godrop
 fi
 mkdir .godrop
-cd $cliDir
+cd .godrop
+echo Downloading root certfificate ...
+curl -G http://104.248.183.179:80/root > root.crt
+echo Root Certfificate installed
+# cd $cliDir
 
-cp root.crt ~/.godrop/root.crt
-echo Root Certificate is installed
+# cp root.crt ~/.godrop/root.crt
+# echo Root Certificate is installed
 
