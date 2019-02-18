@@ -23,7 +23,9 @@ all godrop instances in the local network. You may optionally pass in the `time`
 #### Sharing Files/Directories
 To share a resource, navigate to the directory that contains the resource you'd like to share and run `godrop advertise [path to file]`. Running this command will
 make your machine discoverable by other machines over MDNS. You can optionally provide the `tls` flag to enable TLS. `godrop advertise cats/ --tls`
+![Advertise](.github/adv.gif)
 
 #### Cloning a Resource
 To clone a resource from a peer currently advertising, run `godrop clone [instance]`. This will clone the remote resource into your current working directory. 
 The instance argument can be obtained by running `godrop ls` and simply copy the service instance name of one of the results.
+![Clone](.github/clone.gif)
