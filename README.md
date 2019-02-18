@@ -28,4 +28,5 @@ make your machine discoverable by other machines over MDNS. You can optionally p
 #### Cloning a Resource
 To clone a resource from a peer currently advertising, run `godrop clone [instance]`. This will clone the remote resource into your current working directory. 
 The instance argument can be obtained by running `godrop ls` and simply copy the service instance name of one of the results.
+You may also provide the optional `tls` flag to enable TLS. `godrop clone [instance] --tls` . If the advertising instance has TLS enabled, you must too enable TLS.
 ![Clone](.github/clone.gif)
