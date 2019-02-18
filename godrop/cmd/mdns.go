@@ -27,6 +27,29 @@ func mdnsConfig(drop *godrop.Godrop) {
 	drop.Port = viper.GetInt("LocalPort")
 	drop.Host = viper.GetString("Host")
 	drop.UID = viper.GetString("UID")
+
+	//load TLS
+	rootCrt, err := loadCertificate("root")
+
+	if err != nil {
+		return
+	}
+
+	godropCrt, err := loadCertificate("server")
+
+	if err != nil {
+		return
+	}
+
+	privKey, err := loadPrivateKey()
+
+	if err != nil {
+		return
+	}
+
+	drop.RootCaCert = rootCrt
+	drop.GodropCert = godropCrt
+	drop.GodropPrivateKey = privKey
 }
 
 func strToInt(str string, size int) int64 {

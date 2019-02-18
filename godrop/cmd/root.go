@@ -63,7 +63,7 @@ func readConfig() {
 	viper.SetConfigType("yaml")
 
 	// Check if the Config file exists. If not create it with defaults
-	if existed := createGodropDirIfNotExist(home); !existed {
+	if existed := createGodropConfigIfNotExist(home); !existed {
 		viper.SetDefault("UID", defaultUID)
 		viper.SetDefault("Host", "godrop.local")
 		viper.SetDefault("LocalPort", 4000)
@@ -89,15 +89,15 @@ func readConfig() {
 
 }
 
-func createGodropDirIfNotExist(home string) (existed bool) {
+func createGodropConfigIfNotExist(home string) (existed bool) {
 	pathToConf := path.Join(home, ".godrop", config)
 	viper.SetConfigFile(pathToConf)
 
 	if _, err := os.Stat(pathToConf); os.IsNotExist(err) {
 		//does not exist. create it
-		if err := os.Mkdir(path.Join(home, ".godrop"), 0700); err != nil {
-			panic(err)
-		}
+		// if err := os.Mkdir(path.Join(home, ".godrop"), 0700); err != nil {
+		// 	panic(err)
+		// }
 
 		// now create the config file in the .godrop dir
 		if _, err := os.Create(pathToConf); err != nil {

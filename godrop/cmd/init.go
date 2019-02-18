@@ -94,7 +94,7 @@ func save(values *questions) {
 }
 
 func getGodropDomain() string {
-	response, err := http.Get("http://localhost:80/domain")
+	response, err := http.Get("http://104.248.183.179:80/domain")
 
 	if err != nil {
 		log.Fatal(err)

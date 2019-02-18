@@ -32,6 +32,23 @@ func godropDir() (string, error) {
 	return dropDir, nil
 }
 
+func loadCertificate(crt string) ([]byte, error) {
+	godropDir, err := godropDir()
+
+	if err != nil {
+		return nil, err
+	}
+
+	root, err := ioutil.ReadFile(path.Join(godropDir, crt+".crt"))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return root, nil
+
+}
+
 func loadPublicKey() (*rsa.PublicKey, error) {
 	dropDir, err := godropDir()
 
@@ -61,7 +78,7 @@ func loadPublicKey() (*rsa.PublicKey, error) {
 	return key, nil
 }
 
-func loadPrivateKey() (*rsa.PrivateKey, error) {
+func loadPrivateKey() ([]byte, error) {
 	dropDir, err := godropDir()
 
 	if err != nil {
@@ -69,25 +86,28 @@ func loadPrivateKey() (*rsa.PrivateKey, error) {
 	}
 
 	privatePem, errPrv := os.Open(path.Join(dropDir, "priv.pem"))
-	prvBytes, err := ioutil.ReadAll(privatePem)
 
 	if errPrv != nil {
 		return nil, errPrv
 	}
 
-	prvBlock, prvRest := pem.Decode(prvBytes)
+	prvBytes, err := ioutil.ReadAll(privatePem)
 
-	if len(prvRest) > 0 {
-		return nil, fmt.Errorf("Could not properly parse pub.pem")
-	}
+	return prvBytes, nil
 
-	key, err := x509.ParsePKCS1PrivateKey(prvBlock.Bytes)
+	// prvBlock, prvRest := pem.Decode(prvBytes)
 
-	if err != nil {
-		return nil, err
-	}
+	// if len(prvRest) > 0 {
+	// 	return nil, fmt.Errorf("Could not properly parse priv.pem")
+	// }
 
-	return key, nil
+	// key, err := x509.ParsePKCS1PrivateKey(prvBlock.Bytes)
+
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// return key, nil
 }
 
 func uint16ToBytes(num uint16) ([]byte, error) {

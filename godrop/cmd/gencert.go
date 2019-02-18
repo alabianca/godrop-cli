@@ -48,7 +48,7 @@ func runCert(command *cobra.Command, args []string) {
 	}
 
 	//securely store the private key
-	keyFile, err := os.Create(path.Join(godropDir, "private.key"))
+	keyFile, err := os.Create(path.Join(godropDir, "priv.pem"))
 
 	if err != nil {
 		log.Fatal(err)
@@ -66,7 +66,7 @@ func runCert(command *cobra.Command, args []string) {
 	})
 
 	httpClient := &http.Client{}
-	req, err := http.NewRequest("POST", "http://localhost:80/csr", bytes.NewBuffer(pemBlock))
+	req, err := http.NewRequest("POST", "http://104.248.183.179:80/csr", bytes.NewBuffer(pemBlock))
 
 	if err != nil {
 		log.Fatal(err)
