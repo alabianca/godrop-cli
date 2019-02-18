@@ -15,9 +15,9 @@ import (
 )
 
 const (
-	GB = 1000000000
-	MB = 1000000
-	KB = 1000
+	GB = 1000000000 // 1 Gigabytes
+	MB = 1000000    // 1 Megabyte
+	KB = 1000       // 1 Byte
 )
 
 func godropDir() (string, error) {

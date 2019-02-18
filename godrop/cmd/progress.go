@@ -5,6 +5,7 @@ import (
 	"io"
 )
 
+// Bar is the Progress Bar for download
 type Bar struct {
 	Total   int64
 	Current int64

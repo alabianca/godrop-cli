@@ -10,16 +10,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Configure Godrop over MDNS
-func getGodropConfigs() []godrop.Option {
-	return []godrop.Option{
-		mdnsBasicConfig,
-		mdnsTLSconfig, // @todo: ignore this config if no tls is desired (ie; local testing)
-	}
-}
+func configGodropMdns(tlsDesired bool) (*godrop.Godrop, error) {
 
-func configGodropMdns() (*godrop.Godrop, error) {
-	drop, err := godrop.NewGodrop(getGodropConfigs()...)
+	options := make([]godrop.Option, 0)
+	options = append(options, mdnsBasicConfig)
+
+	if tlsDesired {
+		options = append(options, mdnsTLSconfig)
+	}
+
+	drop, err := godrop.NewGodrop(options...)
 
 	if err != nil {
 		return nil, err

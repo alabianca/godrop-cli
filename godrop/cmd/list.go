@@ -23,7 +23,7 @@ func init() {
 }
 
 func ls(command *cobra.Command, args []string) {
-	drop, err := configGodropMdns()
+	drop, err := configGodropMdns(false)
 
 	if err != nil {
 		log.Fatal(err)

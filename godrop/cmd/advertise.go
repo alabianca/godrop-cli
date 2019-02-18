@@ -13,8 +13,10 @@ const (
 	BUF_SIZE = 1024
 )
 
+var TLSDesiredFlag *bool
+
 var advertiseCmd = &cobra.Command{
-	Use:   "advertise [FILE_TO_SHARE]",
+	Use:   "advertise [FILE_OR_FOLDER_TO_SHARE]",
 	Short: "Share a file with peers in the local network",
 	Run:   runAdvertise,
 }
@@ -32,7 +34,7 @@ func runAdvertise(command *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	drop, err := configGodropMdns()
+	drop, err := configGodropMdns(*TLSDesiredFlag)
 
 	if err != nil {
 		log.Fatal(err)
@@ -59,6 +61,7 @@ func runAdvertise(command *cobra.Command, args []string) {
 }
 
 func init() {
+	TLSDesiredFlag = advertiseCmd.Flags().Bool("tls", false, "Use TLS")
 	RootCmd.AddCommand(advertiseCmd)
 
 }
