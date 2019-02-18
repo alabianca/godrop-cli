@@ -42,15 +42,15 @@ func runClone(command *cobra.Command, args []string) {
 	fmt.Printf("Finding %s ...\n", peer)
 	sesh, err := drop.Connect(peer)
 
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	sesh.DebugWriter = progress
 
 	if !sesh.IsEncrypted() {
 		log.Warn("Transfer is not encrypted. See godrop help gencert for generating a signed TLS certificate")
-	}
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
 	}
 
 	fmt.Printf("Connected to %s. \nHostname: %s\n", peer, sesh.RemoteHost)
