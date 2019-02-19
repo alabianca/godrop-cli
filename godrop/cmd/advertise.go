@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -13,7 +14,7 @@ const (
 	BUF_SIZE = 1024
 )
 
-var TLSDesiredFlag *bool
+var TLSDesiredFlag bool
 
 var advertiseCmd = &cobra.Command{
 	Use:   "advertise [FILE_OR_FOLDER_TO_SHARE]",
@@ -33,8 +34,8 @@ func runAdvertise(command *cobra.Command, args []string) {
 	if err := checkFile(fPath); err != nil {
 		log.Fatal(err)
 	}
-
-	drop, err := configGodropMdns(*TLSDesiredFlag)
+	fmt.Println("Tls: ", TLSDesiredFlag)
+	drop, err := configGodropMdns(TLSDesiredFlag)
 
 	if err != nil {
 		log.Fatal(err)
@@ -61,7 +62,7 @@ func runAdvertise(command *cobra.Command, args []string) {
 }
 
 func init() {
-	TLSDesiredFlag = advertiseCmd.Flags().Bool("tls", false, "Use TLS")
+	advertiseCmd.Flags().BoolVarP(&TLSDesiredFlag, "tls", "t", false, "Use TLS")
 	RootCmd.AddCommand(advertiseCmd)
 
 }

@@ -32,8 +32,8 @@ func runClone(command *cobra.Command, args []string) {
 	}
 
 	fmt.Println("Cloning contents to ", dir)
-
-	drop, err := configGodropMdns(*TLSDesiredFlag)
+	fmt.Println("Tls desired ", TLSDesiredFlag)
+	drop, err := configGodropMdns(TLSDesiredFlag)
 	progress := NewProgressBar(os.Stdout)
 
 	if err != nil {
@@ -74,6 +74,6 @@ func runClone(command *cobra.Command, args []string) {
 }
 
 func init() {
-	TLSDesiredFlag = cloneCmd.Flags().Bool("tls", false, "Use TLS")
+	TLSDesiredFlag = *cloneCmd.Flags().Bool("tls", false, "Use TLS")
 	RootCmd.AddCommand(cloneCmd)
 }
