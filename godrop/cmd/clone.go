@@ -32,7 +32,6 @@ func runClone(command *cobra.Command, args []string) {
 	}
 
 	fmt.Println("Cloning contents to ", dir)
-	fmt.Println("Tls desired ", TLSDesiredFlag)
 	drop, err := configGodropMdns(TLSDesiredFlag)
 	progress := NewProgressBar(os.Stdout)
 

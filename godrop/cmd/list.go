@@ -18,7 +18,7 @@ var listCmd = &cobra.Command{
 var timeFlag int
 
 func init() {
-	timeFlag = *listCmd.Flags().Int("time", 5, "How long to browse for")
+	listCmd.Flags().IntVarP(&timeFlag, "time", "t", 5, "How long to browse for")
 	RootCmd.AddCommand(listCmd)
 
 }
@@ -29,7 +29,7 @@ func ls(command *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("time: ", timeFlag)
+
 	entries, err := drop.Discover(time.Duration(timeFlag))
 
 	if err != nil {

@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -34,7 +33,7 @@ func runAdvertise(command *cobra.Command, args []string) {
 	if err := checkFile(fPath); err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("Tls: ", TLSDesiredFlag)
+
 	drop, err := configGodropMdns(TLSDesiredFlag)
 
 	if err != nil {
