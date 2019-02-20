@@ -73,6 +73,6 @@ func runClone(command *cobra.Command, args []string) {
 }
 
 func init() {
-	TLSDesiredFlag = *cloneCmd.Flags().Bool("tls", false, "Use TLS")
+	cloneCmd.Flags().BoolVarP(&TLSDesiredFlag, "tls", "t", false, "Use TLS")
 	RootCmd.AddCommand(cloneCmd)
 }
