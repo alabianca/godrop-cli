@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"path"
+	"time"
 
 	. "github.com/logrusorgru/aurora"
 	"github.com/mitchellh/go-homedir"
@@ -69,7 +70,9 @@ func runCert(command *cobra.Command, args []string) {
 		Bytes: csr,
 	})
 
-	httpClient := &http.Client{}
+	httpClient := &http.Client{
+		Timeout: time.Second * 10,
+	}
 	req, err := http.NewRequest("POST", "http://104.248.183.179:80/csr", bytes.NewBuffer(pemBlock))
 
 	if err != nil {

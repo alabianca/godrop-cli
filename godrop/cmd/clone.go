@@ -31,6 +31,12 @@ func runClone(command *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
+	pubKey, err := loadPublicKey()
+	if err != nil {
+		log.Error("Error loading public key")
+		os.Exit(1)
+	}
+
 	fmt.Println("Cloning contents to ", dir)
 	drop, err := configGodropMdns(TLSDesiredFlag)
 	progress := NewProgressBar(os.Stdout)
@@ -55,7 +61,8 @@ func runClone(command *cobra.Command, args []string) {
 
 	fmt.Printf("Connected to %s. \nHostname: %s\n", Green(peer), Green(sesh.RemoteDroplet))
 
-	header, err := sesh.Authenticate()
+	//header, err := sesh.Authenticate()
+	header, err := sesh.AuthenticateWithKey(pubKey)
 
 	if err != nil {
 		log.Error("An Error Occurred During Authentication")
